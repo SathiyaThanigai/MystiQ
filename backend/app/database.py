@@ -8,11 +8,6 @@ from .config import DATABASE_URL
 engine = create_async_engine(
     DATABASE_URL,
     echo=False,
-    pool_size=5,            # SQLite only allows 1 writer — keep pool small
-    max_overflow=10,        # Some overflow for burst reads
-    pool_timeout=30,
-    pool_recycle=3600,
-    pool_pre_ping=True,
 )
 
 # Apply PRAGMAs on EVERY new connection (not just once at startup)
