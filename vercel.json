@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://REPLACE_WITH_YOUR_RENDER_URL.onrender.com/api/$1" },
+    { "source": "/api/(.*)", "destination": "https://mystiq-8l5w.onrender.com/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
