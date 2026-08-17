@@ -11,15 +11,17 @@ engine = create_async_engine(
 )
 
 # Apply PRAGMAs on EVERY new connection (not just once at startup)
-@event.listens_for(engine.sync_engine, "connect")
-def set_sqlite_pragma(dbapi_conn, connection_record):
-    cursor = dbapi_conn.cursor()
-    cursor.execute("PRAGMA journal_mode=WAL")
-    cursor.execute("PRAGMA synchronous=NORMAL")
-    cursor.execute("PRAGMA busy_timeout=10000")   # Wait up to 10s if locked
-    cursor.execute("PRAGMA cache_size=-64000")     # 64MB cache
-    cursor.execute("PRAGMA temp_store=MEMORY")
-    cursor.close()
+# Apply PRAGMAs on EVERY new connection (SQLite only — no-op on Postgres)
+if DATABASE_URL.startswith("sqlite"):
+    @event.listens_for(engine.sync_engine, "connect")
+    def set_sqlite_pragma(dbapi_conn, connection_record):
+        cursor = dbapi_conn.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA synchronous=NORMAL")
+        cursor.execute("PRAGMA busy_timeout=10000")
+        cursor.execute("PRAGMA cache_size=-64000")
+        cursor.execute("PRAGMA temp_store=MEMORY")
+        cursor.close()
 
 
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
